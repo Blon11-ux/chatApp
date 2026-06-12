@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation" 
+import Link from "next/link"
 
 const page = () => {
     const [name, setName] = useState("")
@@ -30,7 +31,7 @@ const page = () => {
         }
     }
     return (
-        <div className="flex h-screen items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+        <div className="flex h-screen items-center justify-center bg-gradient-to-br from-red-500 to-black-600">
             <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-xl">
                 <h1 className="mb-6 text-center text-3xl font-bold text-gray-800">ユーザー登録</h1>
                 <form onSubmit={handleSubmit}>
@@ -57,13 +58,12 @@ const page = () => {
                     登録
                 </button>
             </form>
-            <button 
-                type="submit"
-                className="w-full rounded-lg bg-blue-500 px-4 py-3 font-bold text-white hover:bg-blue-600 disabled:bg-gray-400 mt-4">
-                登録
-            </button>
-
             </div>
+            <Link 
+                href="/user/login"
+                className="absolute top-4 left-4 rounded-lg bg-blue-500 px-3 py-1.5 text-m font-bold text-black hover:bg-blue-700 transition-colors">
+                戻る
+            </Link>
         </div>
     )
 }
