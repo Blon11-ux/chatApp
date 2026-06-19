@@ -32,7 +32,7 @@ const page = () => {
     }
     return (
         <div className="flex h-screen items-center justify-center bg-gradient-to-br from-red-500 to-black-600">
-            <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-xl">
+            <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl border-2 border-gray-600">
                 <h1 className="mb-6 text-center text-3xl font-bold text-gray-800">ユーザー登録</h1>
                 <form onSubmit={handleSubmit}>
                 <input className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 font-bold text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none " 

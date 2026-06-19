@@ -5,7 +5,6 @@ import { Server } from "socket.io";
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
-// when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
@@ -13,7 +12,7 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer);
-  const users = new Map(); // ユーザー情報を保存
+  const users = new Map();
 
   io.on("connection", (socket) => {
     console.log('接続しました:', socket.id);
@@ -22,6 +21,7 @@ app.prepare().then(() => {
       users.set(socket.id, { name: data.name });
       console.log('ログイン:', data.name, socket.id);
       io.emit("user_joined", { name: data.name });
+      io.emit("online_users", Array.from(users.values()).map(u => u.name)); // ← added
     });
     
     socket.on("message", (data) => {
@@ -44,6 +44,7 @@ app.prepare().then(() => {
       if (user) {
         io.emit("user_left", { name: user.name });
       }
+      io.emit("online_users", Array.from(users.values()).map(u => u.name)); // ← added
     });
   });
 

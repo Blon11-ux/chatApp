@@ -34,7 +34,7 @@ const Login = () => {
     
     return (
         <div className="flex h-screen items-center justify-center bg-gradient-to-br from-red-500 to-black-600">
-            <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-xl">
+            <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl border-2 border-gray-600">
                 <h1 className="mb-6 text-center text-3xl font-bold text-gray-800">ログイン</h1>
                     <form onSubmit={handleSubmit}>
                         <input 
