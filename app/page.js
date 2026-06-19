@@ -27,10 +27,10 @@ const Home = () => {
 
   const onMessage = (data) => {
     const newMessage = {
-      id: data.id,
+      id: data.id ?? `${data.userName}-${data.timestamp}-${Math.random()}`,
       text: data.text,
       timestamp: new Date(data.timestamp),
-      isOwn: data.userId === socket.id,
+      isOwn: data.userName === userName,
       userName: data.userName,
     };
     setMessages((prev) => [...prev, newMessage]);
@@ -40,14 +40,14 @@ const Home = () => {
     if (!inputValue.trim()) return;
     const messageData = {
       text: inputValue,
-      userId: socket.id,
+      userName,
       timestamp: new Date(),
     };
     socket.emit("message", messageData);
     setInputValue("");
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -56,6 +56,7 @@ const Home = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    socket.disconnect();
     router.push("/user/login");
   };
 
@@ -71,9 +72,12 @@ const Home = () => {
         const decodedJwt = await jwtVerify(token, secretKey);
         setUserName(decodedJwt.payload.name);
         setIsLoggedIn(true);
+
+        if (!socket.connected) {
+          socket.connect();
+        }
         socket.emit("login", { name: decodedJwt.payload.name });
 
-        // fetch all users
         const response = await fetch("/api/user/echiran");
         const data = await response.json();
         setUsers(data.users);
@@ -90,7 +94,7 @@ const Home = () => {
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("message", onMessage);
-    socket.on("online_users", (names) => setOnlineUsers(names)); // ← online tracking
+    socket.on("online_users", (names) => setOnlineUsers(names));
 
     return () => {
       socket.off("connect", onConnect);
@@ -98,14 +102,12 @@ const Home = () => {
       socket.off("message", onMessage);
       socket.off("online_users");
     };
-  }, []);
+  }, [userName]);
 
   if (!isLoggedIn) return <div></div>;
 
   return (
     <div className="flex h-screen">
-
-      {/* サイドバー */}
       <div className="w-64 bg-white border-r flex flex-col">
         <div className="p-4 border-b">
           <h2 className="font-bold text-gray-800">ユーザー一覧</h2>
@@ -139,7 +141,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* チャットエリア */}
       <div className="flex-1 flex flex-col bg-gray-100">
         <header className="border-b bg-white px-6 py-4 shadow">
           <div className="flex items-center justify-between">
@@ -176,7 +177,7 @@ const Home = () => {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               placeholder="メッセージを入力..."
               disabled={!isConnected}
               className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
